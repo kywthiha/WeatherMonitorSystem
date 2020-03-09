@@ -194,11 +194,12 @@ public class WeatherClientGUI extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if (textCity.getText().trim().equals("")) {
             JOptionPane.showMessageDialog(this, "Please enter city", "Warning", JOptionPane.WARNING_MESSAGE);
+            textCity.setText("");
         } else {
             try {
                 if (!setData(textCity.getText().trim())) {
                     JOptionPane.showMessageDialog(this, "Please enter valid city in Our Service", "Warning", JOptionPane.WARNING_MESSAGE);
-                }
+     textCity.setText("");           }
             } catch (IOException ex) {
                 Logger.getLogger(WeatherClientGUI.class.getName()).log(Level.SEVERE, null, ex);
             }

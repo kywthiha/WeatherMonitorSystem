@@ -1,8 +1,11 @@
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class APIService {
@@ -25,20 +28,31 @@ public class APIService {
 
     }
 
-    public WeatherData getWeather() throws IOException {
-        WeatherData weather = new WeatherData();
-        JSONObject jSONObject = this.run();
-        if (jSONObject.has("cod") && jSONObject.getInt("cod") == 404) {
+    public WeatherData getWeather() {
+        try{
+            WeatherData weather = new WeatherData();
+            JSONObject jSONObject = this.run();
+            if (jSONObject.has("cod") && jSONObject.getInt("cod") == 404) {
+                return null;
+            }
+            try{
+                
+                weather.setWeather_state(jSONObject.getJSONArray("weather").getJSONObject(0).getString("description"));
+                JSONObject main_json = jSONObject.getJSONObject("main");
+                weather.setAir_pressure(main_json.getDouble("pressure") + "");
+                weather.setHumidity(main_json.getDouble("humidity") + "");
+                weather.setTemp(main_json.getDouble("temp") + "");
+                weather.setWin_speed(jSONObject.getJSONObject("wind").getDouble("speed") + "");
+                return weather;
+            }catch(JSONException jee){
+                System.err.println(jee);
+                return null;
+            }
+        }catch(IOException ex){
+            Logger.getLogger(APIService.class.getName()).log(Level.SEVERE, null, ex);
             return null;
+            
         }
-
-        weather.setWeather_state(jSONObject.getJSONArray("weather").getJSONObject(0).getString("description"));
-        JSONObject main_json = jSONObject.getJSONObject("main");
-        weather.setAir_pressure(main_json.getDouble("pressure") + "");
-        weather.setHumidity(main_json.getDouble("humidity") + "");
-        weather.setTemp(main_json.getDouble("temp") + "");
-        weather.setWin_speed(jSONObject.getJSONObject("wind").getDouble("speed") + "");
-        return weather;
     }
 
     private JSONObject run() throws IOException {
